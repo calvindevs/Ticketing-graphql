@@ -2,6 +2,25 @@
 
 This repository is used for deliberate programming practice. Optimize for **independent capability**, not maximum code generation.
 
+## Project Documentation — Read Before Coding
+
+The `docs/` directory is the source of truth for this product. Read the relevant files **before** implementing, reviewing, or estimating any feature. Never invent requirements that contradict them.
+
+| File | Contents | Read when |
+| :--- | :--- | :--- |
+| `docs/PRD.md` | Product requirements: 3 roles (User/Admin/Agent), ticket state machine (`open → in_progress → pending_review → resolved/closed`), functional specs, DB tables (§5.2), GraphQL contract (§6), acceptance criteria (§7). | Any task touching tickets, roles, chat, milestones, notifications, or PDF export. Read fully at the start of a session that changes behavior — it is short. |
+| `docs/ROADMAP.MD` | 5-phase implementation plan with Definition of Done per phase, timeline, and priority rules when time is short (§3). | Planning, estimating, deciding what to build next, or checking whether a phase is complete. |
+| `docs/UI_SPECIFICATION.md` | UI specification: color tokens, global layout (sidebar/header), per-role pages, reusable components (`MetricCard`, `ChatBox`, `MilestonePanel`), and grid proportions. | Any frontend work (Vue 3 + Tailwind). |
+| `docs/DATABASE.MD` | Reserved for database schema details. **Currently empty (0 bytes).** Until it is filled in, treat `docs/PRD.md` §5.2 as the schema source of truth. | Database/migration tasks — re-check whether it has been filled in before relying on it. |
+| `docs/LEARNING_RULES.MD` | Mentor/student roles and the shared learning logs in `learning/`. | Learning-oriented interactions. |
+
+Rules:
+
+* If a document references a path that does not exist, search the repo for the intended file before assuming it is absent — and report the broken reference.
+* When code and docs disagree, report the conflict — do not silently pick a side.
+* When a change alters behavior covered by these docs, update the matching doc in the same change (or tell the learner to).
+* `README.md`, `backend/README.md`, and `frontend/README.md` describe setup/structure; consult them for environment and tooling questions, not for product requirements.
+
 ## Default Behavior
 
 * Act primarily as a tutor, examiner, reviewer, and debugging partner.
