@@ -54,7 +54,9 @@ Setiap tiket memiliki siklus status yang ketat untuk mencegah perubahan status y
 ## 4. Spesifikasi Fitur Fungsional
 
 ### 4.1 Autentikasi & Otorisasi
-* Login berbasis token (Laravel Sanctum) yang digunakan untuk otorisasi *request* GraphQL, REST *endpoint* PDF, dan *private channel* WebSocket.
+* Autentikasi memakai **Laravel Fortify + Laravel Sanctum** dalam mode **cookie/session (SPA)** — *bukan* token `Authorization: Bearer`.
+  * `POST /login` dan `POST/GET /logout` ditangani endpoint REST Fortify (`config/fortify.php`: `'views' => false`, halaman login dibuat di Vue).
+  * Inisialisasi CSRF melalui `GET /sanctum/csrf-cookie`; sesi cookie kemudian dipakai oleh *request* GraphQL, REST *endpoint* PDF, dan otorisasi *private channel* WebSocket.
 * *Route guard* pada Vue Router untuk mengarahkan pengguna ke *dashboard* masing-masing (`/user/...`, `/admin/...`, `/agent/...`).
 
 ### 4.2 Manajemen Tiket & Filter
@@ -91,13 +93,13 @@ Setiap tiket memiliki siklus status yang ketat untuk mencegah perubahan status y
 ### 5.1 Arsitektur Komunikasi
 * **Query & Mutation (CRUD):** Vue 3 (`@vue/apollo-composable`) $\leftrightarrow$ Laravel (`nuwave/lighthouse` GraphQL).
 * **Real-Time Events:** Laravel Events (`ShouldBroadcast`) $\rightarrow$ Laravel Reverb Server $\rightarrow$ Vue 3 (`laravel-echo`).
-* **Binary File Download:** Vue 3 (Axios `blob`) $\rightarrow$ Laravel REST Controller (`barryvdh/laravel-dompdf` atau `spatie/laravel-pdf`).
+* **Binary File Download:** Vue 3 (Axios `blob`) $\rightarrow$ Laravel REST Controller (`barryvdh/laravel-dompdf` — keputusan 2026-11-24).
 
 ### 5.2 Tabel Utama Database
 1. **`users`**: `id`, `name`, `email`, `password`, `role` (`user`, `admin`, `agent`), `avatar_url`, `timestamps`.
 2. **`tickets`**: `id`, `ticket_number` (unique), `user_id`, `admin_id` (nullable), `agent_id` (nullable), `title`, `description`, `priority` (`low`, `medium`, `high`), `status` (`open`, `in_progress`, `pending_review`, `resolved`, `closed`), `resolved_at` (nullable), `timestamps`.
-3. **`ticket_milestones`**: `id`, `ticket_id`, `created_by`, `title`, `description` (nullable), `is_completed` (boolean), `due_date` (nullable), `completed_at` (nullable), `timestamps`.
-4. **`conversations`**: `id`, `ticket_id`, `type` (`user_admin`, `admin_agent`), `timestamps`.
+3. **`ticket_milestones`**: `id`, `ticket_id`, `created_by`, `title`, `description` (nullable), `status` (pending, completed), `due_date` (nullable), `completed_at` (nullable), `timestamps`.
+4. **`conversations`**: `id`, `ticket_id`, `type` (`user_admin`, `agent_admin`), `timestamps`.
 5. **`messages`**: `id`, `conversation_id`, `sender_id`, `body`, `attachment_url` (nullable), `read_at` (nullable), `timestamps`.
 6. **`notifications`**: Tabel bawaan Laravel untuk menyimpan payload notifikasi dan status `read_at`.
 
@@ -113,7 +115,7 @@ Setiap tiket memiliki siklus status yang ketat untuk mencegah perubahan status y
 * **Mutations:**
   * `createTicket(input)`: Membuat tiket baru (Role: `user`).
   * `assignTicket(ticketId, agentId)`: Menerima tiket dan menugaskan ke Agent (Role: `admin`).
-  * `createMilestone(ticketId, input)` & `toggleMilestone(milestoneId)`: Mengelola *milestone* (Role: `admin`).
+  * `createMilestone(ticketId, input)`, `updateMilestone(milestoneId, input)`, `deleteMilestone(milestoneId)` & `toggleMilestone(milestoneId)`: Mengelola *milestone* (Role: `admin`).
   * `submitTicketCompletion(ticketId, notes)`: Mengajukan penyelesaian ke Admin (Role: `agent`).
   * `resolveTicket(ticketId)` / `reopenTicket(ticketId)`: Verifikasi akhir penyelesaian tiket (Role: `admin`).
   * `sendMessage(conversationId, body)`: Mengirim pesan *chat* dan memicu *broadcast* Reverb.

@@ -2,6 +2,28 @@
 
 This repository is used for deliberate programming practice. Optimize for **independent capability**, not maximum code generation.
 
+## Multi-Agent Setup — OpenCode ↔ Antigravity
+
+This project uses **two AI coding agents interchangeably**: OpenCode and Antigravity. When one hits its usage limit, the student switches to the other. Both agents must maintain a shared understanding of project progress.
+
+### Synchronization Protocol
+
+1. **`docs/STATUS.md` is the single source of truth for progress.** Both agents MUST read it at the start of every session. Both agents MUST update it in the same commit as any code change.
+2. **At the end of a session** (or when hitting a limit), the active agent should ensure `docs/STATUS.md` is current — this is how the next agent (whichever one it is) picks up where the other left off.
+3. **Never assume the other agent did something.** Always verify by reading the actual code, not by recalling from previous conversations.
+4. **Agent-specific config lives in separate directories:**
+   - OpenCode: `.opencode/` (commands, skills)
+   - Antigravity: `.gemini/` or Antigravity workspace settings
+   - Shared: `docs/`, `learning/`, `AGENTS.md` (this file)
+5. **Both agents follow the same `AGENTS.md` rules** — this file is agent-agnostic.
+
+### Handoff Checklist (do this before switching agents)
+
+- [ ] `docs/STATUS.md` §2 reflects what actually exists in code
+- [ ] `docs/STATUS.md` §5 next actions are current
+- [ ] Any in-progress work is committed or described in STATUS.md
+- [ ] Learning logs in `learning/` are updated if a concept was explored
+
 ## Project Documentation — Read Before Coding
 
 The `docs/` directory is the source of truth for this product. Read the relevant files **before** implementing, reviewing, or estimating any feature. Never invent requirements that contradict them.
@@ -9,9 +31,11 @@ The `docs/` directory is the source of truth for this product. Read the relevant
 | File | Contents | Read when |
 | :--- | :--- | :--- |
 | `docs/PRD.md` | Product requirements: 3 roles (User/Admin/Agent), ticket state machine (`open → in_progress → pending_review → resolved/closed`), functional specs, DB tables (§5.2), GraphQL contract (§6), acceptance criteria (§7). | Any task touching tickets, roles, chat, milestones, notifications, or PDF export. Read fully at the start of a session that changes behavior — it is short. |
-| `docs/ROADMAP.MD` | 5-phase implementation plan with Definition of Done per phase, timeline, and priority rules when time is short (§3). | Planning, estimating, deciding what to build next, or checking whether a phase is complete. |
+| `docs/ROADMAP.MD` | 26-day implementation plan (4 weeks) with per-day Definition of Done, plus **§0 binding architecture decisions** that override other docs, and priority rules when time is short (§3). | Planning, estimating, deciding what to build next, or checking whether a day/week is complete. Read §0 first — it settles auth, MySQL, Reverb, PDF, and naming. |
 | `docs/UI_SPECIFICATION.md` | UI specification: color tokens, global layout (sidebar/header), per-role pages, reusable components (`MetricCard`, `ChatBox`, `MilestonePanel`), and grid proportions. | Any frontend work (Vue 3 + Tailwind). |
-| `docs/DATABASE.MD` | Reserved for database schema details. **Currently empty (0 bytes).** Until it is filled in, treat `docs/PRD.md` §5.2 as the schema source of truth. | Database/migration tasks — re-check whether it has been filled in before relying on it. |
+| `docs/STATUS.md` | Live project state: current phase, what exists in code vs what does not, open decisions, ordered next actions. | **First file to read in any session.** Also update it in the same commit as the change that alters it. |
+| `docs/ARCHITECTURE.md` | Where code belongs (repo layout + "where does new code go" map), state machine, data model, the two authorization layers, real-time flow, design tokens. | Any task that adds a file, a table, an endpoint, a broadcast, or a component. |
+| `docs/DATABASE.MD` | Database schema draft. **Has content but still conflicts with PRD §5.2** on several points (see `docs/STATUS.md` D3b). Until fully reconciled, treat `docs/PRD.md` §5.2 as the schema source of truth. | Database/migration tasks — re-check the conflict list in STATUS.md D3b before relying on it. |
 | `docs/LEARNING_RULES.MD` | Mentor/student roles and the shared learning logs in `learning/`. | Learning-oriented interactions. |
 
 Rules:
@@ -82,7 +106,7 @@ Select a small mix of recent and older meaningful topics. Prefer prediction, deb
 
 ## Learning Workflows
 
-The `.opencode/commands/` directory contains structured learning workflows. When the learner invokes a workflow by name, follow the instructions in that file. These workflows take precedence over the default behavior above.
+The `.opencode/commands/` directory contains structured learning workflows (used by OpenCode). When the learner invokes a workflow by name, follow the instructions in that file. These workflows take precedence over the default behavior above. Antigravity agents should also honor these workflows if the learner references them by name.
 
 Available workflows:
 - **learn** - Entry point that routes to the appropriate workflow
