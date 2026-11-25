@@ -9,16 +9,16 @@
 
 ## 1. Current Phase
 
-The roadmap is now **4 weeks / 26 days** (`docs/ROADMAP.md`). Current position: **Day 0 — nothing started.**
+The roadmap is now **4 weeks / 26 days** (`docs/ROADMAP.md`). Current position: **Day 1 complete — Day 2 next.**
 
 | Week | Days | Focus | PRD Phase | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **1** | Day 1–6 | Backend, Auth & GraphQL Core | 1 + 2 | ⚪ Not started |
+| **1** | Day 1–6 | Backend, Auth & GraphQL Core | 1 + 2 | 🟡 In progress — A1–A3 done |
 | **2** | Day 7–13 | Vue 3 foundation, layout, 3 role dashboards | 2 | ⚪ Not started |
 | **3** | Day 14–20 | Real-time chat & ticket detail | 3 | ⚪ Not started |
 | **4** | Day 21–26 | Notifications, PDF export, QA & polish | 4 + 5 | ⚪ Not started |
 
-**Overall: before Day 1.** The repo contains framework scaffolding plus the specification documents. No product feature exists yet.
+**Overall: Day 1 done.** MySQL is connected, auth is installed and proven by a passing feature test, and 5 seed accounts exist. No product feature exists yet.
 
 ---
 
@@ -32,15 +32,15 @@ The roadmap is now **4 weeks / 26 days** (`docs/ROADMAP.md`). Current position: 
 | GraphQL | `nuwave/lighthouse` ^6.74 installed. Route `GET|POST /graphql` is registered |
 | GraphQL schema | `graphql/schema.graphql` — **default Lighthouse example only** (`user`, `users`). No ticket/chat/milestone types |
 | Lighthouse config | **Not published** (`config/lighthouse.php` missing — vendor defaults in use) |
-| Auth packages | ❌ No `laravel/fortify`, no `laravel/sanctum` (both required Day 1, D4) |
+| Auth packages | ✅ `laravel/fortify` v1.44 + `laravel/sanctum` v4.5 — **cookie/session** mode. `'views' => false`, `$middleware->statefulApi()` enabled |
 | Real-time | ❌ No `laravel/reverb`. `BROADCAST_CONNECTION=log` |
 | PDF | ❌ No `barryvdh/laravel-dompdf` (D5 chosen, not installed yet) |
-| Migrations | 3 framework migrations: `users`, `cache`, `jobs`. The default `users` table exists but lacks PRD fields `role` and `avatar_url`; product schema is otherwise unimplemented. |
-| Models | `app/Models/User.php` only |
-| Seeders | `DatabaseSeeder.php` (default, empty of product data) |
-| Tests | `tests/Feature/ExampleTest.php`, `tests/Unit/ExampleTest.php` (framework defaults) |
-| Routes | `routes/web.php` (default `/` view), `routes/console.php`. **No `routes/channels.php`** |
-| Database | `DB_CONNECTION=sqlite` — `backend/database/database.sqlite` (must switch to MySQL, D1) |
+| Migrations | `users` (with `role` enum `->default('user')`, `avatar_url`), `sessions`, `password_reset_tokens`, `personal_access_tokens`, `add_two_factor_columns_to_users`, `passkeys`, plus cache/jobs. **None of the PRD product tables exist** |
+| Models | `app/Models/User.php` — `role` is fillable. No other product models |
+| Seeders | `UserSeeder` → 1 admin, 2 agent, 2 user (all with timestamps) |
+| Tests | `tests/Feature/Auth/LoginTest.php` — 3 tests / 10 assertions, all passing (valid login, wrong password, role matches) |
+| Routes | `web.php`, `api.php`, `console.php`. **No `routes/channels.php`** |
+| Database | ✅ MySQL, database `ticketing`. **Not** SQLite anymore (D1) |
 
 ### Frontend — `frontend/`
 
@@ -72,7 +72,7 @@ The roadmap is now **4 weeks / 26 days** (`docs/ROADMAP.md`). Current position: 
 
 These are specified in the PRD but **have zero implementation**. Treat every one as not-yet-built:
 
-1. **Product schema is incomplete:** `users` lacks `role` and `avatar_url`; `tickets`, `ticket_milestones`, `conversations`, `messages`, and `notifications` are not implemented.
+1. **Product schema is incomplete:** `users` is done (`role`, `avatar_url`); `tickets`, `ticket_milestones`, `conversations`, `messages`, and `notifications` are not implemented.
 2. **The entire GraphQL contract** in PRD §6 — none of the listed queries/mutations exist.
 3. **The ticket state machine** (`open → in_progress → pending_review → resolved/closed`) — no server-side validation exists anywhere.
 4. **Role-based authorization** — no policies, no Lighthouse directives, no `routes/channels.php`.
@@ -101,10 +101,10 @@ Decisions marked ✅ are **settled — follow them, do not reopen**. Items marke
 
 ## 5. Next Actions (ordered — mirrors `docs/ROADMAP.md` Day 1…)
 
-- [ ] **A1 (Day 1)** — Switch `.env` to **MySQL** (D1), confirm `php artisan migrate` works against it.
-- [ ] **A2 (Day 1)** — Install Fortify + Sanctum: `composer require laravel/fortify`, `fortify:install`, `install:api`, set `'views' => false`, enable `$middleware->statefulApi()` (D4).
-- [ ] **A3 (Day 1)** — Add `role` column to `users` (`user`/`admin`/`agent`) + seeder: 1 Admin, 2 Agent, 2 User.
-- [ ] **A4 (Day 2)** — Publish Lighthouse config, install Reverb (D2), verify `/graphiql`.
+- [x] **A1 (Day 1)** — ✅ `.env` on **MySQL** (`ticketing`); `php artisan migrate` works against it.
+- [x] **A2 (Day 1)** — ✅ Fortify + Sanctum installed, `'views' => false`, `statefulApi()` enabled, `GET /login` correctly returns 405.
+- [x] **A3 (Day 1)** — ✅ `role` + `avatar_url` on `users`, `role` defaults to `user`, `UserSeeder` gives 1 admin / 2 agent / 2 user, and `LoginTest` passes.
+- [ ] **A4 (Day 2)** — Publish `config/lighthouse.php`, install Reverb, verify `/graphiql`.
 - [ ] **A5 (Day 2)** — Auth wiring: `POST /login` + `POST /logout` via Fortify REST; GraphQL `me` query with role; confirm `@guard`/`@can` work against the **cookie session** (no `Bearer` tokens).
 - [ ] **A6 (Day 3)** — Migrations + models for `tickets`, `ticket_milestones`, `conversations`, `messages` (FKs + indexes).
 - [ ] **A7 (Day 3)** — Implement migrations and models from `docs/DATABASE.md`, including documented foreign keys, indexes, timestamps, and server-enforced transition rules.
@@ -135,9 +135,9 @@ The slot the **next** agent reads first. **Rewrite this table — do not append 
 | :--- | :--- |
 | **Last agent** | OpenCode (DeepSeek) |
 | **Session ended** | 2026-11-25 |
-| **Last action taken** | Docs synchronized: repo paths back to `backend/` + `frontend/`, conversation type `agent_admin`, milestone `status`, file names lowercase `.md`; two-agent handoff protocol added; committed |
-| **Work in progress (uncommitted / unfinished)** | none — working tree clean |
-| **Next action for the next agent** | A1 (Day 1) — see §5. Switch `.env` to MySQL first. |
+| **Last action taken** | Day 1 complete: MySQL wired, Fortify + Sanctum cookie auth (views=false, statefulApi), `role` + `avatar_url` on users, `UserSeeder` (1 admin / 2 agent / 2 user), `LoginTest` passing (3 tests / 10 assertions) |
+| **Work in progress (uncommitted / unfinished)** | Day 1 code + docs **not committed yet** at the time of writing. No GQL types, no Reverb, no `channels.php` |
+| **Next action for the next agent** | A4 (Day 2) — publish `config/lighthouse.php`, install Reverb, verify `/graphiql` |
 
 Rules:
 
