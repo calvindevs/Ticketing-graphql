@@ -16,12 +16,15 @@ This project uses **two AI coding agents interchangeably**: OpenCode and Antigra
    - Antigravity: `.agents/` or Antigravity workspace settings
    - Shared: `docs/`, `learning/`, `AGENTS.md` (this file)
 5. **Both agents follow the same `AGENTS.md` rules** — this file is agent-agnostic.
+6. **Handoff slot:** `docs/STATUS.md` **§7 Session Handoff** is where you record *who worked last, what is unfinished, and the single next action*. Rewrite it (never append) as your final act of a session. The other agent reads it first next time.
+7. **Skills and workflows may differ; behaviour must not.** OpenCode uses `.opencode/commands/` + `.opencode/skills/`; Antigravity uses `.agents/rules/` + `.agents/skills/`. Same tutoring rules, same product docs, same progress file.
 
 ### Handoff Checklist (do this before switching agents)
 
+- [ ] Work is **committed** (or explicitly described as uncommitted in §7)
 - [ ] `docs/STATUS.md` §2 reflects what actually exists in code
 - [ ] `docs/STATUS.md` §5 next actions are current
-- [ ] Any in-progress work is committed or described in STATUS.md
+- [ ] `docs/STATUS.md` §7 Session Handoff rewritten
 - [ ] Learning logs in `learning/` are updated if a concept was explored
 
 ## Project Documentation — Read Before Coding

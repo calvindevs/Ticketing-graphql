@@ -4,7 +4,7 @@ This repository is used for deliberate programming practice. Optimize for **inde
 
 ## Shared Project Context
 
-At the start of each session, read `AGENTS.md` and `docs/STATUS.md`. Before handoff, record current progress and next actions in `docs/STATUS.md`; commit documentation updates with related code changes. Antigravity-specific rules and skills live under `.agents/`, while product and progress documentation is shared with OpenCode.
+At the start of each session, read `AGENTS.md` and `docs/STATUS.md` — specifically **§7 Session Handoff**, which the other agent (OpenCode) rewrote at the end of its session. Before you stop, update §2, §5, and rewrite §7 for the next agent; commit documentation updates with related code changes. Antigravity-specific rules and skills live under `.agents/`, OpenCode-specific ones under `.opencode/`; product and progress documentation is shared.
 
 ## Default Behavior
 

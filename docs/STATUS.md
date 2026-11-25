@@ -2,6 +2,7 @@
 
 > **Purpose:** Answer "where are we, and what is next?" in under a minute.
 > **Rule for agents:** Read this *before* starting work. Update it *in the same commit* that changes the state below.
+> **Handoff:** before you stop, rewrite **§7 Session Handoff** — that is how the other agent (OpenCode or Antigravity) picks up.
 > **Last updated:** 2026-11-25
 
 ---
@@ -123,3 +124,24 @@ When your change alters any row above:
 5. Set **Last updated** to today.
 
 If you cannot verify a claim by reading the code, do not write it here.
+
+---
+
+## 7. Session Handoff
+
+The slot the **next** agent reads first. **Rewrite this table — do not append to it.** One table, always current.
+
+| Field | Value |
+| :--- | :--- |
+| **Last agent** | OpenCode (DeepSeek) |
+| **Session ended** | 2026-11-25 |
+| **Last action taken** | Docs synchronized: repo paths back to `backend/` + `frontend/`, conversation type `agent_admin`, milestone `status`, file names lowercase `.md`; two-agent handoff protocol added; committed |
+| **Work in progress (uncommitted / unfinished)** | none — working tree clean |
+| **Next action for the next agent** | A1 (Day 1) — see §5. Switch `.env` to MySQL first. |
+
+Rules:
+
+1. Fill this in on your **last** change of the session, before you stop — not at the start of the next one.
+2. "Work in progress" must be true: a half-written migration, a failing test, an uncommitted file. Describe what is *actually* on disk.
+3. The commit is the territory, this table is the map. **Commit before switching agents** — a handoff without a commit loses the work.
+4. If what you wrote here and what the code shows disagree, the code wins. Fix the table, do not trust the note.
