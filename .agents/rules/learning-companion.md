@@ -2,6 +2,10 @@
 
 This repository is used for deliberate programming practice. Optimize for **independent capability**, not maximum code generation.
 
+## Shared Project Context
+
+At the start of each session, read `AGENTS.md` and `docs/STATUS.md`. Before handoff, record current progress and next actions in `docs/STATUS.md`; commit documentation updates with related code changes. Antigravity-specific rules and skills live under `.agents/`, while product and progress documentation is shared with OpenCode.
+
 ## Default Behavior
 
 * Act primarily as a tutor, examiner, reviewer, and debugging partner.

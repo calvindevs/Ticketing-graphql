@@ -13,7 +13,7 @@ This project uses **two AI coding agents interchangeably**: OpenCode and Antigra
 3. **Never assume the other agent did something.** Always verify by reading the actual code, not by recalling from previous conversations.
 4. **Agent-specific config lives in separate directories:**
    - OpenCode: `.opencode/` (commands, skills)
-   - Antigravity: `.gemini/` or Antigravity workspace settings
+   - Antigravity: `.agents/` or Antigravity workspace settings
    - Shared: `docs/`, `learning/`, `AGENTS.md` (this file)
 5. **Both agents follow the same `AGENTS.md` rules** — this file is agent-agnostic.
 
@@ -31,12 +31,12 @@ The `docs/` directory is the source of truth for this product. Read the relevant
 | File | Contents | Read when |
 | :--- | :--- | :--- |
 | `docs/PRD.md` | Product requirements: 3 roles (User/Admin/Agent), ticket state machine (`open → in_progress → pending_review → resolved/closed`), functional specs, DB tables (§5.2), GraphQL contract (§6), acceptance criteria (§7). | Any task touching tickets, roles, chat, milestones, notifications, or PDF export. Read fully at the start of a session that changes behavior — it is short. |
-| `docs/ROADMAP.MD` | 26-day implementation plan (4 weeks) with per-day Definition of Done, plus **§0 binding architecture decisions** that override other docs, and priority rules when time is short (§3). | Planning, estimating, deciding what to build next, or checking whether a day/week is complete. Read §0 first — it settles auth, MySQL, Reverb, PDF, and naming. |
+| `docs/ROADMAP.md` | 26-day implementation plan (4 weeks) with per-day Definition of Done, plus **§0 binding architecture decisions** that override other docs, and priority rules when time is short (§3). | Planning, estimating, deciding what to build next, or checking whether a day/week is complete. Read §0 first — it settles auth, MySQL, Reverb, PDF, and naming. |
 | `docs/UI_SPECIFICATION.md` | UI specification: color tokens, global layout (sidebar/header), per-role pages, reusable components (`MetricCard`, `ChatBox`, `MilestonePanel`), and grid proportions. | Any frontend work (Vue 3 + Tailwind). |
 | `docs/STATUS.md` | Live project state: current phase, what exists in code vs what does not, open decisions, ordered next actions. | **First file to read in any session.** Also update it in the same commit as the change that alters it. |
-| `docs/ARCHITECTURE.md` | Where code belongs (repo layout + "where does new code go" map), state machine, data model, the two authorization layers, real-time flow, design tokens. | Any task that adds a file, a table, an endpoint, a broadcast, or a component. |
-| `docs/DATABASE.MD` | Database schema draft. **Has content but still conflicts with PRD §5.2** on several points (see `docs/STATUS.md` D3b). Until fully reconciled, treat `docs/PRD.md` §5.2 as the schema source of truth. | Database/migration tasks — re-check the conflict list in STATUS.md D3b before relying on it. |
-| `docs/LEARNING_RULES.MD` | Mentor/student roles and the shared learning logs in `learning/`. | Learning-oriented interactions. |
+| `docs/ARCHITECTURE.md` | Where code belongs (repo layout + "where does new code go" map), state machine, data model, the three authorization surfaces (GraphQL, WebSocket, and PDF endpoint), real-time flow, design tokens. | Any task that adds a file, a table, an endpoint, a broadcast, or a component. |
+| `docs/DATABASE.md` | Detailed schema reference aligned with PRD §5.2, including keys, indexes, timestamps, and legal status transitions. Use it for database implementation; unresolved product decisions remain in STATUS.md. | Database/migration tasks. |
+| `docs/LEARNING_RULES.md` | Mentor/student roles and the shared learning logs in `learning/`. | Learning-oriented interactions. |
 
 Rules:
 

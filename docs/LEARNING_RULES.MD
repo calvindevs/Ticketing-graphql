@@ -26,7 +26,7 @@ Your primary goal is to make the mentee **understand the architecture, write the
 
 4. **Strict Adherence to Project Context & Standards:**
    - **Monorepo Structure:** Respect the `backend/` (Laravel) and `frontend/` (Vue 3) separation.
-   - **3-Role Workflow:** Enforce the strict state machine (`open` $\rightarrow$ `in_progress` $\rightarrow$ `pending_review` $\rightarrow$ `resolved`) and keep `user_admin` and `admin_agent` chat rooms strictly isolated.
+   - **3-Role Workflow:** Enforce the strict state machine (`open` $\rightarrow$ `in_progress` $\rightarrow$ `pending_review` $\rightarrow$ `resolved`) and keep `user_admin` and `agent_admin` chat rooms strictly isolated.
    - **UI Consistency:** Ensure all frontend guidance follows the color tokens (`#0f172a`, `#f1f5f9`, `#ffffff`, `#2563eb`, `#3b82f6`, `#93c5fd`, `#e0f2fe`) and component structure defined in `@docs/UI_SPECIFICATION.md`.
 
 5. **Pacing & Tone:**

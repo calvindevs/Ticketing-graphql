@@ -82,9 +82,9 @@ Estimasi total pengerjaan **4 minggu / 26 hari kerja**.
 * Indeks wajib: `tickets.ticket_number` **unique**, index komposit `(status, priority)` untuk filter dashboard, `messages(conversation_id, created_at)` untuk riwayat chat.
 * Factory + seeder data tiket realistis (campur 3 role, semua status).
 
-* **Tulis `docs/DATABASE.MD` hari ini** — hari paling tepat untuk mengisinya. Isi minimal: daftar tabel + relasi, enum, dan **tabel transisi status legal + role yang boleh memicu**. Setelah selesai, tandai D3 di `docs/STATUS.md` sebagai selesai.
+* Gunakan `docs/DATABASE.md` sebagai acuan saat membuat migrasi dan model. Pastikan foreign key, indeks, timestamps, dan aturan transisi status pada implementasi cocok dengan dokumen; perbarui dokumen bila ada perubahan yang disepakati.
 
-*Selesai jika:* migrasi bisa `fresh` lalu `seed`, dan `DATABASE.MD` sudah memuat relasi + tabel transisi status.
+*Selesai jika:* migrasi bisa `fresh` lalu `seed`, dan skema yang terpasang sesuai dengan `docs/DATABASE.md`, termasuk relasi serta matriks transisi status.
 
 #### Day 4 — GraphQL Queries & Create Ticket Flow
 
@@ -101,11 +101,11 @@ Estimasi total pengerjaan **4 minggu / 26 hari kerja**.
 
 *Backend (nama mutation **wajib** sama dengan PRD §6):*
 
-* `assignTicket(ticketId, agentId)` — Admin. Mengisi `admin_id`/`agent_id`, status → `in_progress`, membuat `Conversation` `admin_agent`.
+* `assignTicket(ticketId, agentId)` — Admin. Mengisi `admin_id`/`agent_id`, status → `in_progress`, membuat `Conversation` `agent_admin`.
 * `submitTicketCompletion(ticketId, notes)` — Agent → `pending_review`.
 * `resolveTicket(ticketId)` — Admin → `resolved`.
 * **`reopenTicket(ticketId)` — Admin → `in_progress`.** Jangan dilewatkannya: tanpa ini, tiket yang salah resolve tidak punya jalan keluar (PRD §3).
-* Policy + validasi transisi status **di sisi server**: role yang tidak berhak, atau transisi di luar tabel di `DATABASE.MD`, harus ditolak dengan pesan jelas — bukan hanya tombol disembunyikan di UI (PRD §7).
+* Policy + validasi transisi status **di sisi server**: role yang tidak berhak, atau transisi di luar tabel di `DATABASE.md`, harus ditolak dengan pesan jelas — bukan hanya tombol disembunyikan di UI (PRD §7).
 * **Tulis feature test** untuk setiap transisi legal dan minimal 3 transisi ilegal.
 
 *Selesai jika:* seluruh jalur `open → in_progress → pending_review → resolved` **dan** `resolved → in_progress` lolos test; transisi acak ditolak.
@@ -210,10 +210,10 @@ Estimasi total pengerjaan **4 minggu / 26 hari kerja**.
 
 *Selesai jika:* dua browser berbeda saling menerima pesan dalam < 1 detik tanpa reload (PRD §7).
 
-#### Day 17 — Pemisahan Dual Chat Room (user_admin vs admin_agent)
+#### Day 17 — Pemisahan Dual Chat Room (user_admin vs agent_admin)
 
 * Tab `User Chat` dan `Agent Chat` khusus tampilan Admin.
-* User hanya terhubung ke `user_admin`; Agent hanya ke `admin_agent`. Uji aktif: **User tidak boleh bisa membaca `admin_agent`** — ini syarat privasi inti PRD §7.
+* User hanya terhubung ke `user_admin`; Agent hanya ke `agent_admin`. Uji aktif: **User tidak boleh bisa membaca `agent_admin`** — ini syarat privasi inti PRD §7.
 
 *Selesai jika:* percakapan internal Admin–Agent tidak terbaca oleh User, baik lewat UI maupun lewat subscribe channel langsung.
 
@@ -276,7 +276,7 @@ Estimasi total pengerjaan **4 minggu / 26 hari kerja**.
 
 #### Day 25 — End-to-End Testing Lintas 3 Role
 
-* Buka 3 sesi browser bersamaan (User, Admin, Agent), uji skenario penuh: buat tiket → chat `user_admin` → assign ke agent → buat milestone → chat `admin_agent` → agent ajukan selesai → admin verifikasi & resolve → (uji `reopenTicket`) → export PDF.
+* Buka 3 sesi browser bersamaan (User, Admin, Agent), uji skenario penuh: buat tiket → chat `user_admin` → assign ke agent → buat milestone → chat `agent_admin` → agent ajukan selesai → admin verifikasi & resolve → (uji `reopenTicket`) → export PDF.
 * Catat dan perbaiki: bug sinkronisasi state, duplikasi pesan WebSocket, edge case validasi.
 * Pastikan `php artisan test` tetap hijau — jalankan test state machine dari Day 5 kembali.
 
@@ -286,7 +286,7 @@ Estimasi total pengerjaan **4 minggu / 26 hari kerja**.
 
 * Loading skeleton, empty state, pesan error form, responsif laptop + mobile.
 * Tulis `README.md`: langkah instalasi, konfigurasi `.env` (termasuk MySQL + Reverb), dan perintah menjalankan Laravel, Reverb, dan Vue bersamaan.
-* **Perbarui `docs/STATUS.md` secara menyeluruh** — semua fase selesai, `DATABASE.MD` dan gap di §3 harus sudah terhapus, `ARCHITECTURE.md` §9 harus bersih dari pertanyaan yang terjawab.
+* **Perbarui `docs/STATUS.md` secara menyeluruh** — semua fase selesai, `DATABASE.md` dan gap di §3 harus sudah terhapus, `ARCHITECTURE.md` §9 harus bersih dari pertanyaan yang terjawab.
 
 *Selesai jika:* README cukup bagi orang baru untuk menjalankan aplikasi dari nol, dan `STATUS.md` tidak lagi menyebut "belum ada fitur".
 

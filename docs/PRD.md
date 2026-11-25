@@ -25,8 +25,8 @@ Membangun aplikasi *ticketing system* berbasis web yang terintegrasi dengan komu
 | Role | Tanggung Jawab Utama | Hak Akses Utama |
 | :--- | :--- | :--- |
 | **User** | Melaporkan kendala dan memantau progres penyelesaian tiket. | Membuat tiket, melihat tiket miliknya, *chat* dengan Admin (`user_admin`), melihat *milestone* (*read-only*), menerima notifikasi, dan *export* PDF tiket miliknya. |
-| **Admin** | Melakukan triase tiket masuk, mendelegasikan tugas, mengatur *milestone*, dan memverifikasi hasil kerja. | Melihat semua tiket, menerima & menugaskan tiket ke Agent, mengelola *milestone* (CRUD & centang selesai), *chat* terpisah dengan User (`user_admin`) dan Agent (`admin_agent`), menyetujui penyelesaian (`resolved`), dan *export* PDF. |
-| **Agent** | Mengeksekusi masalah teknis yang ditugaskan oleh Admin. | Melihat tiket yang ditugaskan kepadanya, *chat* internal dengan Admin (`admin_agent`), memantau *milestone*, dan mengajukan penyelesaian tiket ke Admin (`pending_review`). |
+| **Admin** | Melakukan triase tiket masuk, mendelegasikan tugas, mengatur *milestone*, dan memverifikasi hasil kerja. | Melihat semua tiket, menerima & menugaskan tiket ke Agent, mengelola *milestone* (CRUD & centang selesai), *chat* terpisah dengan User (`user_admin`) dan Agent (`agent_admin`), menyetujui penyelesaian (`resolved`), dan *export* PDF. |
+| **Agent** | Mengeksekusi masalah teknis yang ditugaskan oleh Admin. | Melihat tiket yang ditugaskan kepadanya, *chat* internal dengan Admin (`agent_admin`), memantau *milestone*, dan mengajukan penyelesaian tiket ke Admin (`pending_review`). |
 
 ---
 
@@ -39,7 +39,7 @@ Setiap tiket memiliki siklus status yang ketat untuk mencegah perubahan status y
    * Sistem otomatis membuat nomor tiket unik (misal: `TK-202611-001`), membuat ruang obrolan `user_admin`, dan mengirim notifikasi ke semua Admin.
 2. **`in_progress` (Penerimaan & Penugasan oleh Admin):**
    * Admin meninjau tiket masuk, menerima tiket, dan memilih *Agent* yang bertugas.
-   * Sistem mengisi `admin_id` dan `agent_id`, mengubah status tiket menjadi `in_progress`, membuat ruang obrolan kedua `admin_agent`, serta mengirim notifikasi ke Agent dan User.
+   * Sistem mengisi `admin_id` dan `agent_id`, mengubah status tiket menjadi `in_progress`, membuat ruang obrolan kedua `agent_admin`, serta mengirim notifikasi ke Agent dan User.
    * Admin membuat daftar *milestone* pengerjaan sebagai panduan teknis.
 3. **`pending_review` (Pengajuan Selesai oleh Agent):**
    * Agent mengerjakan kendala sambil berkoordinasi dengan Admin melalui *tab* `Agent Chat`.
@@ -67,7 +67,7 @@ Setiap tiket memiliki siklus status yang ketat untuk mencegah perubahan status y
 ### 4.3 Real-Time Chat ala WhatsApp (GraphQL + Laravel Reverb)
 * **Pemisahan Ruang Obrolan:**
   * `user_admin`: Hanya dapat diakses oleh User pembuat tiket dan Admin yang menangani.
-  * `admin_agent`: Hanya dapat diakses oleh Admin dan Agent yang ditugaskan (percakapan internal tidak terlihat oleh User).
+  * `agent_admin`: Hanya dapat diakses oleh Admin dan Agent yang ditugaskan (percakapan internal tidak terlihat oleh User).
 * **Fitur Interaktif Real-Time:**
   * Pengiriman pesan teks (dan lampiran opsional) melalui GraphQL *mutation* `sendMessage` yang memicu *broadcast* ke Laravel Reverb *private channel* (`conversation.{id}`).
   * *Typing indicator* (*"Sedang mengetik..."*) menggunakan fitur *whisper* Laravel Echo tanpa membebani *database*.
@@ -139,6 +139,6 @@ Setiap tiket memiliki siklus status yang ketat untuk mencegah perubahan status y
 
 1. **Phase 1 — Foundation & Auth:** Setup Laravel, Lighthouse GraphQL, Reverb, migrasi *database*, dan sistem login 3 *role*.
 2. **Phase 2 — Core Ticketing & Milestones:** Implementasi pembuatan tiket, *assign agent*, *state machine* status, dan CRUD *milestone*.
-3. **Phase 3 — Real-Time Chat Engine:** Integrasi Laravel Echo di Vue 3, *private channel* `user_admin` & `admin_agent`, *typing indicator*, dan *read receipts*.
+3. **Phase 3 — Real-Time Chat Engine:** Integrasi Laravel Echo di Vue 3, *private channel* `user_admin` & `agent_admin`, *typing indicator*, dan *read receipts*.
 4. **Phase 4 — Notifications & PDF Export:** Lonceng notifikasi *real-time* dan generator dokumen PDF tiket.
 5. **Phase 5 — QA & Polishing:** Pengujian skenario lintas *role* secara bersamaan dan penyempurnaan responsivitas UI.

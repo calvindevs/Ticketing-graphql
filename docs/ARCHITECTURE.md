@@ -1,4 +1,4 @@
-﻿# Architecture — Real-Time Ticketing System
+# Architecture — Real-Time Ticketing System
 
 > **Purpose:** Tell an agent *where code belongs* and *how a request travels*, so it does not have to re-discover the structure each session.
 > **Scope:** This describes the **target** architecture from `docs/PRD.md` §5. Sections marked ⚠️ **NOT BUILT** do not exist in the code yet.
@@ -54,12 +54,12 @@ Ticketing/
 ├── README.md
 ├── docs/                      # Specification — source of truth
 │   ├── PRD.md                 # Requirements, roles, state machine, GraphQL contract
-│   ├── ROADMAP.MD             # 26-day plan + §0 binding architecture decisions
+│   ├── ROADMAP.md             # 26-day plan + §0 binding architecture decisions
 │   ├── UI_SPECIFICATION.md    # Design tokens, layout, per-role pages
 │   ├── STATUS.md              # Where we are now + next actions
 │   ├── ARCHITECTURE.md        # This file
-│   ├── DATABASE.MD            # Schema draft — ⚠️ conflicts with PRD (see STATUS.md D3)
-│   └── LEARNING_RULES.MD      # Mentor/student rules
+│   ├── DATABASE.md            # Detailed schema reference aligned with PRD §5.2
+│   └── LEARNING_RULES.md      # Mentor/student rules
 ├── learning/                  # Shared learning logs (mistakes, concepts, questions, review)
 ├── backend/                   # Laravel 12
 │   ├── graphql/schema.graphql # Single schema file (Lighthouse convention here)
@@ -136,7 +136,7 @@ This is the single most important domain rule. It is **server-enforced**, never 
 | Transition | Trigger | Who may do it | New status |
 | :--- | :--- | :--- | :--- |
 | Create | `createTicket` | `user` (creator) | `open` |
-| Accept & assign | `assignTicket` | `admin` | `in_progress` — also fills `admin_id`, `agent_id`, creates `admin_agent` conversation |
+| Accept & assign | `assignTicket` | `admin` | `in_progress` — also fills `admin_id`, `agent_id`, creates `agent_admin` conversation |
 | Submit for review | `submitTicketCompletion` | `agent` (assigned) | `pending_review` |
 | Verify | `resolveTicket` | `admin` | `resolved` |
 | Send back | `reopenTicket` | `admin` | `in_progress` |
@@ -166,17 +166,17 @@ users 1──* notifications (Laravel default)
 | Type | Created when | Participants |
 | :--- | :--- | :--- |
 | `user_admin` | ticket is created (`open`) | reporter + admin |
-| `admin_agent` | ticket is assigned (`in_progress`) | admin + agent |
+| `agent_admin` | ticket is assigned (`in_progress`) | admin + agent |
 
-The `admin_agent` room must never be readable by the reporter — this is the core privacy requirement (PRD §4.3, §7).
+The `agent_admin` room must never be readable by the reporter — this is the core privacy requirement (PRD §4.3, §7).
 
 Enums:
 - `users.role`: `user` | `admin` | `agent`
 - `tickets.priority`: `low` | `medium` | `high`
 - `tickets.status`: `open` | `in_progress` | `pending_review` | `resolved` | `closed`
-- `conversations.type`: `user_admin` | `admin_agent`
+- `conversations.type`: `user_admin` | `agent_admin`
 
-> Full column list: `docs/PRD.md` §5.2. `docs/DATABASE.MD` holds a draft; it must be reconciled with §5.2 (relations, constraints, transition rules) before Day 3 — see `STATUS.md` D3b.
+> Follow `docs/DATABASE.md` for the detailed schema. Product behavior and role requirements are defined in `docs/PRD.md`.
 
 ---
 
@@ -272,7 +272,7 @@ Layout: sidebar fixed `240px` dark; main canvas light. Radius: `rounded-2xl` for
 
 **Resolved (2026-11-24):**
 
-* ✅ **Auth stack:** Laravel Fortify + Laravel Sanctum, **cookie/session SPA auth** (not API tokens). `login`/`logout` are Fortify REST endpoints; only `me` is GraphQL. See §5 and `ROADMAP.MD` §0.
+* ✅ **Auth stack:** Laravel Fortify + Laravel Sanctum, **cookie/session SPA auth** (not API tokens). `login`/`logout` are Fortify REST endpoints; only `me` is GraphQL. See §5 and `ROADMAP.md` §0.
 * ✅ **MySQL vs SQLite:** MySQL. `.env` still says `sqlite` — switch on Day 1 (`docs/STATUS.md` D1).
 * ✅ **When to install Reverb:** Day 2 (`docs/STATUS.md` D2).
 * ✅ **PDF library:** `barryvdh/laravel-dompdf` (`docs/STATUS.md` D5).
@@ -281,4 +281,3 @@ Layout: sidebar fixed `240px` dark; main canvas light. Radius: `rounded-2xl` for
 **Unresolved — do not assume an answer:**
 
 1. **Status `closed`.** Enum exists, no transition reaches it. Blocked on `docs/STATUS.md` D7. Implement nothing for it until answered.
-2. **`DATABASE.MD` is a draft that conflicts with PRD §5.2** (table names, `type` enum, `is_completed`, plus no FKs/indexes/transition table). PRD §5.2 remains authoritative until D3b is answered (`docs/STATUS.md`).
