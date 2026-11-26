@@ -17,6 +17,8 @@ type Query {
       "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
       name: String @where(operator: "like")
     ): [User!]! @paginate(defaultCount: 10)
+
+    me: User @guard(with: ["web"]) @auth
 }
 
 "Account of a person who uses this application."
@@ -29,6 +31,10 @@ type User {
 
     "Unique email address."
     email: String!
+
+    role:String!
+
+    avatar_url: String
 
     "When the email was verified."
     email_verified_at: DateTime
